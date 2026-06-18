@@ -1,0 +1,7 @@
+allowBuilds:
+  '@prisma/engines': true
+  prisma: true
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@langchain/core@1.2.0'
+  - '@langchain/ollama@1.3.0'
