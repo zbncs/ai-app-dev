@@ -9,4 +9,9 @@ export class ChainsController {
   publishChain(@Body() body: { article: string }) {
     return this.chainsService.publishChain(body.article);
   }
+
+  @Post('router')
+  smartRouter(@Body() body: { question: string }) {
+    return this.chainsService.smartRouter(body.question);
+  }
 }
