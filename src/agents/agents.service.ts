@@ -92,7 +92,7 @@ export class AgentsService {
   );
   // 定义一个工具函数，模拟查询订单状态
   private checkOrderTool = tool(
-    (orderId: string) => {
+    ({ orderId }: { orderId: string }) => {
       const status = [
         '待支付',
         '已支付',
@@ -148,14 +148,14 @@ export class AgentsService {
 
     const messages: any[] = [
       // 设定系统角色，告诉模型它是一个智能客服助手，能够处理查询商品信息、创建订单、查询订单状态和申请退款等任务
-      new SystemMessage(`你是一个[极速购]电商平台的AI智能客服助手，帮助用户查询商品信息，创建订单，查询订单状态和申请
+      new SystemMessage(`你是一个电商平台的AI智能客服助手，帮助用户查询商品信息，创建订单，查询订单状态和申请退款等任务
         你可以使用以下的工具帮助客户：
         - check_product：查询商品库存和价格的工具，输入参数是商品名字，字段名只能是 productName，输出是一个字符串，包含商品的库存和价格信息
-        - create_order：创建订单的工具，输入参数是商品名字和数量，客户的名字，输出是一个字符串，包含订单创建的结果
-        - check_order：查询订单状态的工具，输入参数是订单ID，输出是一个字符串，包含订单的当前状态
-        - refund_tool：申请退款的工具，输入参数是订单ID和退款原因，输出是一个字符串，包含退款申请的结果
+        - create_order_tool：创建订单的工具，输入参数是商品名字和数量，客户的名字，输出是一个字符串，包含订单创建的结果
+        - check_order_tool：查询订单状态的工具，输入参数是订单ID，输出是一个字符串，包含订单的当前状态
+        - refund_order_tool：申请退款的工具，输入参数是订单ID和退款原因，输出是一个字符串，包含退款申请的结果
         工作原则：
-        1. 先用工具获取真实信息，再给用户回复，产品名称字段名只能是 productName，不允许使用其他字段名。
+        1. 先用工具获取真实信息，再给用户回复，大模型返回的产品名称字段名只能是 productName，不允许使用其他字段名。
         2. 下单前必须先查询库存，确认有货后才能下单
         3. 下单的时候要知道用户的姓名， 如果用户没有提供姓名，要先询问用户的姓名
         4. 回答简洁友好，使用中文
@@ -182,7 +182,6 @@ export class AgentsService {
         );
         const toolFn = toolMaps[tool_call.name];
         if (toolFn) {
-          console.log('tool_call.args:-----', tool_call.args);
           const result = (await toolFn.invoke(tool_call.args)) as string;
           steps.push(`工具调用结果：${result}`);
           messages.push(
@@ -199,6 +198,7 @@ export class AgentsService {
               tool_call_id: tool_call.id!,
             }),
           );
+          break;
         }
       }
     }
